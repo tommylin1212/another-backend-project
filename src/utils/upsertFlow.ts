@@ -46,6 +46,6 @@ export async function findMissingVectors(trackIds:string[]){
         return null
     }
     //missingIds will contain all of the ids that are not in the vectorResult
-    const missingIds = trackIds.filter((id) => !vectorResult.vectors[id])
+    const missingIds = trackIds.filter((id) => !vectorResult.vectors?.[id])
     return missingIds
 }
