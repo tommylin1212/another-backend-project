@@ -26,9 +26,9 @@ async function fetchFromSpotify(url: string, accessToken: string) {
   return jsonData;
 }
 
-export const getTopTracks = async(accessToken: string) => fetchFromSpotify("https://api.spotify.com/v1/me/top/tracks", accessToken);
+export const getTopTracks = async (accessToken: string) => fetchFromSpotify("https://api.spotify.com/v1/me/top/tracks", accessToken);
 
-export const getTrackFeatures = async(accessToken: string, trackIds: string) =>  fetchFromSpotify(`https://api.spotify.com/v1/audio-features?ids=${trackIds}`, accessToken);
+export const getTrackFeatures = async (accessToken: string, trackIds: string) => fetchFromSpotify(`https://api.spotify.com/v1/audio-features?ids=${trackIds}`, accessToken);
 
 export async function createTrackFeaturesVector(trackFeatures: SpotifyApi.MultipleAudioFeaturesResponse) {
   logger.info(`Creating track features vector`);
@@ -56,10 +56,10 @@ export async function crawlSpotifyTracks(seedTrackId: string, limit: number, tok
   logger.info(`Crawling Spotify tracks. Seed track ID: ${seedTrackId}, limit: ${limit}`);
   const recommendationsUrl = `https://api.spotify.com/v1/recommendations?limit=${limit}&seed_tracks=${seedTrackId}`;
   const recommendations = await fetchFromSpotify(recommendationsUrl, token);
-  
+  logger.debug(`Recommendations: ${JSON.stringify(recommendations)}`);
   let trackIds = recommendations.tracks.map((track: SpotifyApi.TrackObjectFull) => track.id);
   trackIds.push(seedTrackId)
-  trackIds=await findMissingVectors(trackIds)
+  trackIds = await findMissingVectors(trackIds)
   for (const trackId of trackIds) {
     logger.info(`Crawling track ${trackId}`);
     const trackFeatures = await getTrackFeatures(token, trackId);
@@ -72,6 +72,6 @@ export async function crawlSpotifyTracks(seedTrackId: string, limit: number, tok
   return nextSeedTrackId;
 }
 
-export const searchTracksByQuery = async(query:string, token:string) => fetchFromSpotify(`https://api.spotify.com/v1/search?q=${query}&type=track&limit=10`, token);
+export const searchTracksByQuery = async (query: string, token: string) => fetchFromSpotify(`https://api.spotify.com/v1/search?q=${query}&type=track&limit=10`, token);
 
-export const getTracksById = async(trackIds:string[], token:string) => fetchFromSpotify(`https://api.spotify.com/v1/tracks?ids=${trackIds.join(",")}`, token);
+export const getTracksById = async (trackIds: string[], token: string) => fetchFromSpotify(`https://api.spotify.com/v1/tracks?ids=${trackIds.join(",")}`, token);
